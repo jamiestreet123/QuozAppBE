@@ -1,0 +1,102 @@
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Quiz {
+  id            String      @id @default(uuid())
+  date          DateTime  @default(now()) @db.Date
+  questions     Question[]
+}
+
+model Question {
+  id            String      @id @default(uuid())
+  full_question String
+  answers       Answer[]
+  quiz          Quiz      @relation(fields: [quizId], references: [id])
+  quizId        String    
+}
+
+model Answer {
+  id            String      @id @default(uuid())
+  full_answer   String
+  correct       Boolean
+  question      Question  @relation(fields: [questionId], references: [id])
+  questionId    String   
+}
+
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  password      String
+  username      String      @unique
+  refreshTokens RefreshToken[]
+  passwordRefreshTokens PasswordResetToken[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  scores        Score[]
+  leaderboards  Leaderboard[] @relation(name: "leaderboardMembers")
+  adminFor      Leaderboard[] @relation(name: "leaderBoardAdmins")
+  createdLeaderboards Leaderboard[] @relation(name: "leaderBoardCreatedBy")
+  requestedFor  Leaderboard[] @relation(name: "leaderBoardRequests")
+
+}
+
+model RefreshToken {
+  id            String      @id @default(uuid())
+  hashedToken   String
+  userId        String
+  User          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revoked       Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model PasswordResetToken {
+  id            String      @id @default(uuid())
+  userId        String
+  User          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token         String      @unique @db.VarChar(128)
+  tokenExpiry   BigInt      
+}
+
+model Score {
+  id            String      @id @default(uuid())
+  date          String
+  userId        String
+  User          User        @relation(fields: [userId], references: [id])
+  score         Int
+  events        Event[]
+}
+
+model Event {
+  id            String      @id @default(uuid())
+  type          EventType
+  time          Float
+  currentScore  Int
+  scoreId       String
+  Score         Score       @relation(fields: [scoreId], references: [id])
+}
+
+enum EventType {
+  ANSWER
+  LIFELINE
+}
+
+model Leaderboard {
+  id            String      @id @default(uuid())
+  code          String      @unique @db.VarChar(6)
+  name          String
+  creatorId     String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  creator       User        @relation(name: "leaderBoardCreatedBy", fields: [creatorId], references: [id])
+  admins        User[]      @relation(name: "leaderBoardAdmins")
+  members       User[]      @relation(name: "leaderboardMembers")
+  requests      User[]      @relation(name: "leaderBoardRequests")
+  isPublic      Boolean     @default(false)
+}
