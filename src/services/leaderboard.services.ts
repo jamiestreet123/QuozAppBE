@@ -6,6 +6,27 @@ type Leaderboard = {
     user_id: string;
 }
 
+type Member = {
+    id: string;
+    email: string;
+    password: string;
+    username: string;
+    createdAt: Date;
+    updatedAt: Date;
+};
+
+type Score = Prisma.PickEnumerable<Prisma.ScoreGroupByOutputType, "userId"[]> & {
+    _sum: {
+        score: number | null;
+    };
+};
+
+type ScoreOut = {
+    id: string;
+    username: string;
+    score: number;
+}
+
 export const validateLeaderbaord = (body: Leaderboard) => {
     // check there is a creator
     const hasName = body.name !== null;
@@ -103,7 +124,7 @@ export const findLeaderboardById = async ({id, startDate, endDate}: LeaderboardR
         },
     });
 
-    const memberIds = members.map(member => member.id);
+    const memberIds = members.map((member: Member) => member.id);
 
     const scores = await prisma.score.groupBy({
         by: ['userId'],
@@ -119,13 +140,13 @@ export const findLeaderboardById = async ({id, startDate, endDate}: LeaderboardR
         },
     });
 
-    const out = members.map(member => {
+    const out = members.map((member: Member) => {
         return {
             id: member.id,
             username: member.username,
-            score: scores.find(score => score.userId === member.id)?._sum.score || 0,
+            score: scores.find((score: Score) => score.userId === member.id)?._sum.score || 0,
         }
-    }).sort((a, b) => a.score < b.score ? 1 : -1);
+    }).sort((a: ScoreOut, b: ScoreOut) => a.score < b.score ? 1 : -1);
 
     return {
         leaderboard,

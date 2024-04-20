@@ -1,7 +1,13 @@
-import { next } from "cheerio/lib/api/traversing";
 import { NextFunction, Request, Response } from "express";
 import { findUserScoreForDate, createScore, updateScore, findRecentScoresByUserId, getWeeklyScore, getMonthlyScore, getAllTimeScore } from "../services/score.services";
 import { dateFormatter } from "../utils/helpers";
+
+type Score = {
+    id: string;
+    date: string;
+    userId: string;
+    score: number;
+}
 
 const postScore = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -91,7 +97,7 @@ const getRecentScoresByUser = async (req: Request, res: Response, next: NextFunc
 
         const scoresFound = await findRecentScoresByUserId( userId, recentDays );
 
-        const recentScores = recentDays.map(date => scoresFound.find(score => score.date === date) || {date, userId, score: 0});
+        const recentScores = recentDays.map(date => scoresFound.find((scoreItem: Score) => scoreItem.date === date) || {date, userId, score: 0});
 
         res.status(200).json(recentScores);
     } catch (e) {
