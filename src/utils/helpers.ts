@@ -7,6 +7,8 @@ export const dateFormatter = (date: Date) => {
     return yyyy + '-' + mm + '-' + dd;
 };
 
+export const getBaseUrl = () => process.env.BASE_URL || "http://localhost:8081/";
+
 const schema = new passwordValidator();
 
 // Add properties to it

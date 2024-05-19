@@ -3,7 +3,7 @@ import {checkPasswordResetTokenValid, deletePasswordResetToken, findUserByEmail,
 import nodemailer from 'nodemailer';
 import { randomBytes } from 'crypto';
 import bcrypt from 'bcrypt';
-import { schema } from '../utils/helpers';
+import { getBaseUrl, schema } from '../utils/helpers';
 
 const resetPasswordEmail = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -31,7 +31,7 @@ const resetPasswordEmail = async (req: Request, res: Response, next: NextFunctio
                 },
               });
 
-              const href = `http://localhost:8081/login/password-reset?token=${resetToken}&user_id=${user.id}`;
+              const href = `${getBaseUrl()}/login/password-reset?token=${resetToken}&user_id=${user.id}`;
             
               const mailOptions = {
                 from: "munroapp@gmail.com",

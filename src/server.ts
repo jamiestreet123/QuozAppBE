@@ -7,13 +7,20 @@ import LeaderboardRouter from './routes/leaderboard.routes';
 import EmailRouter from './routes/email.routes';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { getBaseUrl } from "./utils/helpers";
 
 dotenv.config();
 
 export const prisma = new PrismaClient();
 
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+  origin: getBaseUrl(),
+  optionsSuccessStatus: 200,
+}
+
+app.use(cors(corsOptions));
 const port = 8080;
 
 async function main() {
