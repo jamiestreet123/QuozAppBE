@@ -39,9 +39,14 @@ async function main() {
     res.status(404).json({ error: `Route ${req.originalUrl} not found` });
   });
 
+  app.get("/", (req: Request, res: Response) => {
+    res.status(200).json({message: "success"});
+  });
+
   app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
   });
+  
 }
 
 main()
