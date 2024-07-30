@@ -26,16 +26,16 @@ const resetPasswordEmail = async (req: Request, res: Response, next: NextFunctio
                 port: 465,
                 secure: true,
                 auth: {
-                  user: "munroapp@gmail.com",
-                  pass: "pzde bdvx ijmn vudk"
+                  user: "",
+                  pass: ""
                 },
               });
 
               const href = `${getBaseUrl()}/login/password-reset?token=${resetToken}&user_id=${user.id}`;
             
               const mailOptions = {
-                from: "munroapp@gmail.com",
-                to: "jamiestreet69@gmail.com",
+                from: "",
+                to: "",
                 subject: "Quiz App: Password Reset",
                 html: `<p>Hi ${user.username}</p>
                         <br>
